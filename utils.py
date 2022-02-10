@@ -5,8 +5,7 @@ import math
 
 def augment(image):
     transform = transforms.Compose(
-        [
-            transforms.RandomResizedCrop(224, scale=(0.08, 0.1)), 
+        [   transforms.RandomResizedCrop(224, scale=(0.08, 0.1)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ColorJitter(0.4, 0.4, 0.2, 0.1),
             transforms.RandomGrayscale(p=0.2),
@@ -66,7 +65,7 @@ class LARS(torch.optim.Optimizer):
 
 
 def adjust_learning_rate(args, optimizer, loader, step):
-    max_steps = args.epochs * len(loader)
+    max_steps = args.epoch * len(loader)
     warmup_steps = 10 * len(loader)
     base_lr = args.batch_size / 256
     if step < warmup_steps:
@@ -78,3 +77,19 @@ def adjust_learning_rate(args, optimizer, loader, step):
         end_lr = base_lr * 0.001
         lr = base_lr * q + end_lr * (1 - q)
     optimizer.param_groups[0]['lr'] = lr * args.lr
+
+
+def optim(model, weight_decay):
+    param_weights = []
+    param_biases = []
+    for param in model.parameters():
+        if param.ndim == 1:
+            param_biases.append(param)
+        else:
+            param_weights.append(param)
+    parameters = [{'params': param_weights}, {'params': param_biases}]
+    optimizer = LARS(parameters, lr=0, weight_decay=weight_decay,
+                     weight_decay_filter=True,
+                     lars_adaptation_filter=True)
+
+    return optimizer
