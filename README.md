@@ -2,7 +2,7 @@
 An easy-to-use implementation of [VICReg](https://arxiv.org/abs/2105.04906) in Pytorch.
 
 ![VICReg: image from paper](vicreg.png)
-VICReg: image from paper
+
 
 ### Installation
 To rerun experiments or try on your own dataset, first clone the repository and install `requirements.txt`.
